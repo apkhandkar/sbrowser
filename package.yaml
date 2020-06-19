@@ -1,0 +1,44 @@
+name:                sbrowser
+version:             0.1.0.0
+github:              "apkhandkar/sbrowser"
+license:             Unlicense
+author:              "Arjun Khandkar"
+maintainer:          "khandkararjun@gmail.com"
+copyright:           "2020 Arjun Khandkar"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+description:         Please see the README on GitHub at <https://github.com/apkhandkar/sbrowser#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- brick >= 0.50
+- vty >= 5.24
+- directory >= 1.2
+
+library:
+  source-dirs: src
+
+executables:
+  sbrowser-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - sbrowser
+
+tests:
+  sbrowser-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - sbrowser
