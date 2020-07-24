@@ -21,7 +21,6 @@ source-repository head
 library
   exposed-modules:
       BrowserInterface
-      EntryCursor
   other-modules:
       Paths_sbrowser
   hs-source-dirs:

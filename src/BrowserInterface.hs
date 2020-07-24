@@ -17,13 +17,17 @@ import Brick.AttrMap (AttrMap, attrMap)
 import Brick.Main
 import Brick.Types (BrickEvent(..), EventM, Next, ViewportType(..), Widget, vpSize)
 import Brick.Util (on)
+import Brick.Widgets.Border
 import Brick.Widgets.Center (hCenter)
-import Brick.Widgets.Core (emptyWidget, raw, str, vBox, viewport, withAttr)
+import Brick.Widgets.Core (emptyWidget, padLeftRight, raw, str, vBox, viewport, withAttr)
 import qualified Brick.Widgets.List as L
 
 import qualified Graphics.Vty as GV
 import Graphics.Vty.Attributes
 import Graphics.Vty.Input.Events
+
+versionString :: String
+versionString = "0.1.0.0"
 
 data Status
     = OK
@@ -79,17 +83,18 @@ initialize = do
 
 render :: BrowserState -> [Widget ResourceName]
 render s =
-    let title = "sbrowse 0.1.0.0"
-     in flip (:) [] $
-        vBox
-            [ vBox
-                  [ (withAttr "title") . hCenter . str $ title
-                  , if status s == OK
-                        then (withAttr "statusOK") . hCenter . str $ "Browsing" ++ currDir s
-                        else (withAttr "statusNotOK") . hCenter . str $ (\(NotOK s) -> s) $ status s
-                  ]
-            , (L.renderList listDrawElement True (dirList s))
-            ]
+    flip (:) [] $
+    borderWithLabel (padLeftRight 2 $ str $ title) $
+    vBox
+        [ vBox
+              [ if status s == OK
+                    then (withAttr "statusOK") . hCenter . str $ "Browsing " ++ currDir s
+                    else (withAttr "statusNotOK") . hCenter . str $ (\(NotOK s) -> s) $ status s
+              ]
+        , L.renderList listDrawElement True (dirList s)
+        ]
+  where
+    title = "sbrowse v" ++ versionString
 
 listDrawElement :: Bool -> FilePath -> Widget ResourceName
 listDrawElement s e = str $ e
