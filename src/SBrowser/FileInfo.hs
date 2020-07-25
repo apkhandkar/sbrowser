@@ -28,4 +28,4 @@ getMimeType :: String -> String
 getMimeType = takeWhile (\c -> c /= ';')
 
 getMimeEncoding :: String -> String
-getMimeEncoding = (drop 2) . dropWhile (\c -> c /= ';')
+getMimeEncoding = (drop 10) . dropWhile (\c -> c /= ';')

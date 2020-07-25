@@ -4,11 +4,11 @@ module SBrowser.TUInterface where
 
 import Brick.AttrMap (AttrMap, attrMap)
 import Brick.Main
-import Brick.Types (BrickEvent(..), EventM, Next, ViewportType(..), Widget, vpSize)
+import Brick.Types (BrickEvent(..), EventM, Next, Padding(Max), ViewportType(..), Widget, vpSize)
 import Brick.Util (on)
 import Brick.Widgets.Border
 import Brick.Widgets.Center (hCenter)
-import Brick.Widgets.Core (emptyWidget, padLeftRight, raw, str, vBox, viewport, withAttr)
+import Brick.Widgets.Core (emptyWidget, hBox, hLimitPercent, padLeftRight, padRight, raw, str, vBox, viewport, withAttr)
 import qualified Brick.Widgets.List as WL
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.List (sort)
@@ -20,6 +20,7 @@ import qualified Graphics.Vty as GV
 import Graphics.Vty.Attributes
 import Graphics.Vty.Input.Events
 import SBrowser.FileInfo
+import SBrowser.Utils
 import System.Directory
 import System.Exit (die)
 
@@ -35,6 +36,7 @@ data BrowserState =
     BrowserState
         { status :: Status
         , currDir :: FilePath
+        , info :: Maybe FileInformation
         , dirList :: WL.List ResourceName FilePath
         }
     deriving (Show)
@@ -65,7 +67,7 @@ attributes =
     attrMap
         GV.defAttr
         [ (WL.listSelectedAttr, GV.black `on` GV.white)
-        , ("title", GV.withStyle (GV.white `on` GV.blue) GV.bold)
+        , ("fileInfo", GV.withStyle (GV.white `on` GV.blue) GV.bold)
         , ("statusOK", GV.withStyle (GV.white `on` GV.green) GV.bold)
         , ("statusNotOK", GV.withStyle (GV.white `on` GV.red) GV.bold)
         ]
@@ -73,10 +75,11 @@ attributes =
 initialize :: IO BrowserState
 initialize = do
     cd <- getCurrentDirectory
+    fi <- getFileInformation cd
     paths <- DL.sort <$> (getDirectoryContents cd)
     if null paths
         then die "Empty directory list"
-        else return $ BrowserState OK cd (WL.list DirList (DV.fromList paths) 1)
+        else return $ BrowserState OK cd (Just fi) (WL.list DirList (DV.fromList paths) 1)
 
 render :: BrowserState -> [Widget ResourceName]
 render s =
@@ -89,6 +92,7 @@ render s =
                     else (withAttr "statusNotOK") . hCenter . str $ (\(NotOK s) -> s) $ status s
               ]
         , WL.renderList (\s e -> str $ e) True (dirList s)
+        , (withAttr "fileInfo") . (padRight Max) . str $ printFileInfo $ info s
         ]
   where
     title = "sbrowse v" ++ versionString
@@ -100,11 +104,21 @@ handleEv s e = do
             case ev of
                 EvKey (KChar 'q') [] -> halt s
                 EvKey KEnter [] -> continue =<< (liftIO $ enterDir s)
-                ev -> continue =<< handleNavigation s ev
+                ev -> do
+                    s' <- handleNavigation s ev
+                    ni <- liftIO $ getNewFileInfo s'
+                    continue s' {info = ni}
         _ -> continue s
 
 handleNavigation :: BrowserState -> Event -> EventM ResourceName BrowserState
-handleNavigation s e = WL.handleListEventVi WL.handleListEvent e (dirList s) >>= \l -> return $ s {dirList = l}
+handleNavigation s e = do
+    l <- WL.handleListEventVi WL.handleListEvent e (dirList s)
+    return $ s {dirList = l}
+
+getNewFileInfo s = do
+    case WL.listSelectedElement $ dirList s of
+        Nothing -> return Nothing
+        Just (_, currEntry) -> return . Just =<< getFileInformation currEntry
 
 enterDir :: BrowserState -> IO BrowserState
 enterDir s = do

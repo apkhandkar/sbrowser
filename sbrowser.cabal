@@ -22,6 +22,7 @@ library
   exposed-modules:
       SBrowser.TUInterface
       SBrowser.FileInfo
+      SBrowser.Utils
   other-modules:
       Paths_sbrowser
   hs-source-dirs:
