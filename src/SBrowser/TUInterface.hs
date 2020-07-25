@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module BrowserInterface where
+module SBrowser.TUInterface where
 
 import Brick.AttrMap (AttrMap, attrMap)
 import Brick.Main
@@ -19,6 +19,7 @@ import qualified Data.Vector as DV (fromList)
 import qualified Graphics.Vty as GV
 import Graphics.Vty.Attributes
 import Graphics.Vty.Input.Events
+import SBrowser.FileInfo
 import System.Directory
 import System.Exit (die)
 

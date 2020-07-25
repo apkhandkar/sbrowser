@@ -1,6 +1,6 @@
 module Main where
 
-import BrowserInterface
+import SBrowser.TUInterface
 
 main :: IO ()
 main = runBrowser

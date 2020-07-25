@@ -20,7 +20,8 @@ source-repository head
 
 library
   exposed-modules:
-      BrowserInterface
+      SBrowser.TUInterface
+      SBrowser.FileInfo
   other-modules:
       Paths_sbrowser
   hs-source-dirs:
@@ -29,6 +30,8 @@ library
       base >=4.7 && <5
     , brick >=0.50
     , directory >=1.2
+    , magic >=1.1
+    , time >=1.9.3
     , vty >=5.24
     , vector >=0.12
   default-language: Haskell2010
