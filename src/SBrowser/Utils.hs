@@ -1,11 +1,12 @@
 module SBrowser.Utils where
 
 import qualified Data.List as DL
-import SBrowser.FileInfo (FileInformation(..))
+import SBrowser.FileInfo (FileInfo(..))
 
-printFileInfo :: Maybe FileInformation -> String
-printFileInfo Nothing = "<Invalid/No Selection>"
-printFileInfo (Just fi) =
-    if DL.isInfixOf "directory" (mimeType fi)
-        then "Directory ..."
-        else show (size fi) ++ " bytes, MIME Type: " ++ mimeType fi ++ ", Encoding: " ++ encoding fi
+fileInfoString :: Maybe FileInfo -> String
+fileInfoString Nothing = "<Invalid/No Selection>"
+fileInfoString (Just fi) =
+    desc fi ++
+    if (desc fi) == "directory"
+        then ""
+        else ", " ++ (show $ size fi) ++ " bytes"

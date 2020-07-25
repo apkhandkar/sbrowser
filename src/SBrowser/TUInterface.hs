@@ -36,7 +36,7 @@ data BrowserState =
     BrowserState
         { status :: Status
         , currDir :: FilePath
-        , info :: Maybe FileInformation
+        , info :: Maybe FileInfo
         , dirList :: WL.List ResourceName FilePath
         }
     deriving (Show)
@@ -75,7 +75,7 @@ attributes =
 initialize :: IO BrowserState
 initialize = do
     cd <- getCurrentDirectory
-    fi <- getFileInformation cd
+    fi <- getFileInfo cd
     paths <- DL.sort <$> (getDirectoryContents cd)
     if null paths
         then die "Empty directory list"
@@ -92,7 +92,7 @@ render s =
                     else (withAttr "statusNotOK") . hCenter . str $ (\(NotOK s) -> s) $ status s
               ]
         , WL.renderList (\s e -> str $ e) True (dirList s)
-        , (withAttr "fileInfo") . (padRight Max) . str $ printFileInfo $ info s
+        , (withAttr "fileInfo") . (padRight Max) . str $ fileInfoString (info s)
         ]
   where
     title = "sbrowse v" ++ versionString
@@ -118,7 +118,7 @@ handleNavigation s e = do
 getNewFileInfo s = do
     case WL.listSelectedElement $ dirList s of
         Nothing -> return Nothing
-        Just (_, currEntry) -> return . Just =<< getFileInformation currEntry
+        Just (_, currEntry) -> return . Just =<< getFileInfo currEntry
 
 enterDir :: BrowserState -> IO BrowserState
 enterDir s = do
