@@ -92,7 +92,7 @@ render s =
                     else (withAttr "statusNotOK") . hCenter . str $ (\(NotOK s) -> s) $ status s
               ]
         , WL.renderList (\s e -> str $ e) True (dirList s)
-        , (withAttr "fileInfo") . (padRight Max) . str $ fileInfoString (info s)
+        , (withAttr "fileInfo") . (padRight Max) . str $ fileInfoString (info s) ++ ", " ++ timeString (info s)
         ]
   where
     title = "sbrowse v" ++ versionString

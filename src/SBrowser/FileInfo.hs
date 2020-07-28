@@ -21,9 +21,4 @@ getFileInfo fp = do
     acct <- getAccessTime fp
     modt <- getModificationTime fp
     desc <- flip magicFile fp =<< (\m -> magicLoadDefault m >> return m) =<< magicOpen [MagicNone]
-    return $ FileInfo size acct modt (shortenDesc desc)
-
--- Iffy way to shorten the description returned by libmagic
--- Ignore everything after a comma, colon or semicolon
-shortenDesc :: String -> String
-shortenDesc = takeWhile $ \c -> (c /= ',') && (c /= ':') && (c /= ';')
+    return $ FileInfo size acct modt desc
