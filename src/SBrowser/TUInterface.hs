@@ -25,7 +25,7 @@ import System.Directory
 import System.Exit (die)
 
 versionString :: String
-versionString = "0.1.0.0"
+versionString = "0.1.0.1b"
 
 data Status
     = OK
@@ -88,7 +88,7 @@ render s =
     vBox
         [ vBox
               [ if status s == OK
-                    then (withAttr "statusOK") . hCenter . str $ "Browsing " ++ currDir s
+                    then (withAttr "statusOK") . hCenter . str $ "Now Browsing " ++ currDir s
                     else (withAttr "statusNotOK") . hCenter . str $ (\(NotOK s) -> s) $ status s
               ]
         , WL.renderList (\s e -> str $ e) True (dirList s)
