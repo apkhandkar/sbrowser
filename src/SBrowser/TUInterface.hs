@@ -115,6 +115,7 @@ handleNavigation s e = do
     l <- WL.handleListEventVi WL.handleListEvent e (dirList s)
     return $ s {dirList = l}
 
+getNewFileInfo :: BrowserState -> IO (Maybe FileInfo)
 getNewFileInfo s = do
     case WL.listSelectedElement $ dirList s of
         Nothing -> return Nothing
